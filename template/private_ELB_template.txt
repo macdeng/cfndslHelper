@@ -1,0 +1,18 @@
+  elb.name = 'PrivateElb'+CGS
+  elb.loadbalancername = 'ew4-dev11-elb-'+CGS.downcase
+  elb.scheme = 'internal'
+  elb.subnets = [PRIVATE_SUBNET_ID]
+  elb.instances = a_cgs
+  a_listener = Array.new
+  listener.instanceport = '5858'
+  listener.loadbalancerport = '5858'
+  listener.protocol = 'TCP'
+  a_listener.insert(-1,listener.clone)
+  listener.instanceport = '5859'
+  listener.loadbalancerport = '5859'
+  listener.protocol = 'TCP'
+  a_listener.insert(-1,listener.clone)
+  elb.listeners = a_listener
+  healthCheck.target = 'HTTP:8080/'
+  elb.healthcheck = healthCheck.clone
+  createELB(elb)

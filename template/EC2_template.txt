@@ -1,0 +1,28 @@
+# create EC2 instances for TO_MODIFY server
+  (1..TO_MODIFY_NUM).each do |i|
+    ec2_name = PREFIX + TO_MODIFY + i.to_s
+    tag_ec2_name = PREFIX + DELIMITER + TO_MODIFY + DELIMITER + i.to_s
+    a_to_modify[i-1]=Ref(ec2_name)
+    tags_ec2 = Array.new
+                   .insert(-1,EC2Tag.new('Service','edge-server')) #!modify
+                   .insert(-1,EC2Tag.new('Studio','beijing')) #!modify
+                   .insert(-1,EC2Tag.new('Product','ew4')) #!modify
+                   .insert(-1,EC2Tag.new('Costcenter','ew4')) #!modify
+                   .insert(-1,EC2Tag.new('Gamelong','EternityWarriors4')) #!modify
+                   .insert(-1,EC2Tag.new('Environment','development11')) #!modify
+                   .insert(-1,EC2Tag.new('Name',tag_ec2_name))
+    ec2.tags = tags_ec2
+    ec2.name=ec2_name
+    ec2.subnetid = PRIVATE_SUBNET_ID #!modify
+    ec2.instancetype = h_instance_type[TO_MODIFY.downcase]
+    createEC2(ec2)
+    # attach EBS to instance
+    ebs_volume_name=ec2_name+'Vl'
+    volume.name = ebs_volume_name
+    volume.availabilityzone = FnGetAtt(ec2_name, 'AvailabilityZone')
+    createVolume(volume)
+    volumeAttachment.name = ec2_name+'Mp'
+    volumeAttachment.instanceid = Ref(ec2_name)
+    volumeAttachment.volumeid = Ref(ebs_volume_name)
+    createVolumeAttachment(volumeAttachment)
+  end

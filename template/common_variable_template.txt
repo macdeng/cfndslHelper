@@ -1,0 +1,26 @@
+  security_group_name='EW4Dev11CN'
+  sg = SG.new
+  sg.vpcid = VPC_ID
+  sg.name = security_group_name
+  sg.groupdescription = 'It is '+security_group_name
+  sg_ingress = SGIngress.new
+  ec2 = EC2.new
+  ec2.imageid = image_id
+  ec2.keyname = KEY_NAME
+  ec2.ebsoptimized = false
+  ec2.securitygroupids = [Ref(security_group_name)]
+  volume = Volume.new
+  volume.volumetype = 'gp2'
+  volume.snapshotid = snapshot_id
+  volume.size = volume_size.to_s
+  volume.setDeletionPolicy(DELETION_POLICY)
+  volumeAttachment = VolumeAttachment.new
+  volumeAttachment.device = '/dev/sdf'
+  listener = Listener.new
+  healthCheck = HealthCheck.new
+  healthCheck.healthy_threshold = '3'
+  healthCheck.interval = '30'
+  healthCheck.timeout = '5'
+  healthCheck.unhealthy_threshold = '5'
+  elb = ELB.new
+  elb.securitygroups = [Ref(security_group_name)]

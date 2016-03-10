@@ -1,0 +1,26 @@
+  elb.name = 'PublicElb'+EDGE
+  elb.loadbalancername = 'ew4-dev11-elb-'+EDGE.downcase
+  elb.scheme = 'internet-facing'
+  elb.subnets = [PUBLIC_SUBNET_ID]
+  elb.instances = a_edge
+  a_listener = Array.new
+  listener.instanceport = '8080'
+  listener.loadbalancerport = '8080'
+  listener.protocol = 'HTTP'
+  a_listener.insert(-1,listener.clone)
+  listener.instanceport = '9008'
+  listener.loadbalancerport = '9008'
+  listener.protocol = 'TCP'
+  a_listener.insert(-1,listener.clone)
+  listener.instanceport = '5570'
+  listener.loadbalancerport = '5570'
+  listener.protocol = 'TCP'
+  a_listener.insert(-1,listener.clone)
+  listener.instanceport = '8170'
+  listener.loadbalancerport = '8170'
+  listener.protocol = 'TCP'
+  a_listener.insert(-1,listener.clone)
+  elb.listeners = a_listener
+  healthCheck.target = 'HTTP:80/'
+  elb.healthcheck = healthCheck.clone
+  createELB(elb)
